@@ -73,22 +73,26 @@ class Clip : MonoBehaviour {
 		}
 		start = Time.fixedTime;
 		i = 0f;
-		while (i < 1f) {
-			i = (Time.fixedTime - start) / 0.1f;
-			clear.localScale = new Vector3(1f, 1f - curve.Evaluate(i), 1f);
+		clear.localScale = Vector3.zero;
+		pulse.transform.localScale = Vector3.zero;
+		while (i < 0.3f) {
+			i = Time.fixedTime - start;
+			float scale;
+			if (i < 0.2f) {
+				scale = curve.Evaluate(i / 0.2f) * 0.8f;
+				pulse.transform.localScale = new Vector3(scale, scale, 1f);
+			} else {
+				clip = size;
+				SetFill(1f);
+				pulse.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
+			}
+			if (i >= 0.1f) {
+				scale = curve.Evaluate((i - 0.1f) / 0.2f) * 0.8f;
+				clear.localScale = new Vector3(scale, scale, 1f);
+			}
 			yield return new WaitForFixedUpdate();
 		}
-		clear.localScale = new Vector3(1f, 0f, 1f);
-		clip = size;
-		SetFill(1f);
-		start = Time.fixedTime;
-		i = 0f;
-		while (i < 1f) {
-			i = (Time.fixedTime - start) / 0.1f;
-			clear.localScale = new Vector3(1f, curve.Evaluate(i), 1f);
-			yield return new WaitForFixedUpdate();
-		}
-		clear.localScale = new Vector3(1f, 1f, 1f);
+		clear.localScale = new Vector3(0.8f, 0.8f, 1f);
 		StartCoroutine(Reload());
 		// yield break;
 	}
