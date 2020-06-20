@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 26034983}
   - component: {fileID: 26034982}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 53242709}
   - component: {fileID: 53242710}
   m_Layer: 0
-  m_Name: ReloadPulse
+  m_Name: Pulse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 251224597}
   - component: {fileID: 251224598}
   m_Layer: 0
-  m_Name: ReloadClear
+  m_Name: Clear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -477,10 +477,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   divider: {fileID: 5485149058278495710, guid: 446d26e96ac7ecf4ab4aeccf4d4bd908, type: 3}
   ring: {fileID: 1024804863}
+  pulse: {fileID: 53242710}
+  clear: {fileID: 251224597}
   size: 3
   fireTime: 0.2
   chargeTime: 2
-  reloadTime: 2
+  reloadTime: 0.8
   regular: {r: 0.72156864, g: 0.08235294, b: 0.35686275, a: 1}
   charged: {r: 1, g: 0, b: 0.5407772, a: 1}
 --- !u!4 &632235985
