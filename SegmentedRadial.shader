@@ -1,10 +1,11 @@
-Shader "Custom/RadialFill" {
+Shader "Custom/SegmentedRadialFill" {
 	Properties {
 		[PerRendererData]
 		_MainTex ("Texture", 2D) = "white" {
 		}
 		_Start("Start", Range(0, 360)) = 0
 		_Fill("Fill", Range(0, 1)) = 1
+		_Segments("Segments", Range(0, 6)) = 3
 	}
 	
 	SubShader {
