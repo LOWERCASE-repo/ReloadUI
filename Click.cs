@@ -6,6 +6,6 @@ class Click : MonoBehaviour {
 	private SpriteRenderer self;
 	
 	private void Update() {
-		self.color = Input.GetKey(KeyCode.Mouse0) ? new Color(184f / 256f, 21f / 256f, 91f / 256f) : new Color(40f / 256f, 40f / 256f, 40f / 256f);
+		self.color = Input.GetKey(KeyCode.Mouse0) ? Color.gray : new Color(40f / 256f, 40f / 256f, 40f / 256f);
 	}
 }

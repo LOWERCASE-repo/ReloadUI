@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 632235985}
   - component: {fileID: 632235984}
   m_Layer: 0
-  m_Name: Clip
+  m_Name: Miracell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -472,7 +472,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 632235983}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fb03ecc30092be4495446bb8246e417, type: 3}
+  m_Script: {fileID: 11500000, guid: ae112a1ff806bb049bc9b8f3253565d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   divider: {fileID: 5485149058278495710, guid: 446d26e96ac7ecf4ab4aeccf4d4bd908, type: 3}
@@ -480,11 +480,13 @@ MonoBehaviour:
   pulse: {fileID: 53242710}
   clear: {fileID: 251224597}
   size: 3
-  fireTime: 0.2
+  orbLockTime: 0.2
+  drainLockTime: 0.3
+  chargeLockTime: 0.3
+  drainTime: 1
   chargeTime: 2
-  reloadTime: 0.8
-  regular: {r: 0.72156864, g: 0.08235294, b: 0.35686275, a: 1}
-  charged: {r: 1, g: 0, b: 0.5407772, a: 1}
+  regular: {r: 1, g: 0.75666475, b: 0.1745283, a: 1}
+  charged: {r: 0.99186844, g: 1, b: 0.41037738, a: 1}
 --- !u!4 &632235985
 Transform:
   m_ObjectHideFlags: 0
