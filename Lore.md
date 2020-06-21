@@ -1,6 +1,6 @@
 ### Lore
-- ambient air is saturated with light (or energy, magic, wisps, etc)
-- weapon (miracell? lightlock? lumokinesis? mirashard?) stores light for orb attacks
+- ambient air is saturated with light
+- weapon (miracell) stores light for orb attacks
 - when below full capacity, it attempts to reload by draining ambient light
 - when at zero capacity, light hunger increases and it can absorb light fast enough to channel it into a beam
 - alternatively, weapon can overcharge and release all its stored light at once
