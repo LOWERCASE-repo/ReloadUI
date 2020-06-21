@@ -479,14 +479,14 @@ MonoBehaviour:
   ring: {fileID: 1024804863}
   pulse: {fileID: 53242710}
   clear: {fileID: 251224597}
-  size: 3
+  size: 6
   orbLockTime: 0.2
   drainLockTime: 0.3
-  chargeLockTime: 0.3
+  chargeLockTime: 0.5
   drainTime: 1
   chargeTime: 2
-  regular: {r: 1, g: 0.75666475, b: 0.1745283, a: 1}
-  charged: {r: 0.99186844, g: 1, b: 0.41037738, a: 1}
+  beamTime: 0.2
+  color: {r: 1, g: 0.81788373, b: 0.24056602, a: 1}
 --- !u!4 &632235985
 Transform:
   m_ObjectHideFlags: 0
