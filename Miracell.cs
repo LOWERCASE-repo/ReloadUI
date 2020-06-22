@@ -6,7 +6,7 @@ class Miracell : MonoBehaviour {
 	[SerializeField]
 	private SpriteRenderer divider, ring, pulse;
 	[SerializeField]
-	private Transform clear, reveal;
+	private Transform clear, center;
 	
 	[SerializeField] [Range(2, 6)]
 	private int clip = 3;
@@ -21,12 +21,13 @@ class Miracell : MonoBehaviour {
 	private SpriteRenderer[] dividers;
 	private int orbs;
 	private bool locked, queued;
-	private float chargeAng;
+	private float chargeAng, beamAng;
 	
 	private void Start() {
 		orbs = clip;
 		float gap = 360f / clip;
 		chargeAng = Mathf.Floor(chargeTime) * 360f + gap / 2f;
+		beamAng = gap / 2f;
 		ring.sharedMaterial.SetFloat("_Start", 0f);
 		SetFill(1f);
 		ring.color = color;
@@ -69,25 +70,30 @@ class Miracell : MonoBehaviour {
 	}
 	
 	private IEnumerator Beam() {
+		// TODO change to simple fade in dot, doesnt make reload look weird
 		locked = true;
 		float start = Time.fixedTime;
-		for (float i = 0; i >= 0f;) {
-			ScaleBeamColor(i / beamTime);
-			bool channeling = Input.GetKey(KeyCode.Mouse0);
+		center.localScale = new Vector3(0.6f, 0.6f, 1f);
+		SetMask(true);
+		SetFill(1f);
+		for (float i = 0f; i >= 0f;) {
+			ScaleBeamColor(1f - i / beamTime);
 			float scale = curve.Evaluate(i / beamTime);
-			transform.rotation = (-chargeAng * scale).Rot();
-			reveal.localScale = new Vector3(scale, scale, 1f) * 0.8f;
-			while (i >= beamTime && channeling) yield return new WaitForFixedUpdate();
+			transform.rotation = (beamAng * scale).Rot();
+			clear.localScale = new Vector3(scale, scale, 1f) * 0.8f;
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 			float delta = Time.fixedTime - start;
-			i = !Input.GetKey(KeyCode.Mouse0) ? i + delta : i - Mathf.PI * delta;
-			i = Mathf.Clamp(i, 0f, beamTime);
+			i = Input.GetKey(KeyCode.Mouse0) ? i + delta : i - Mathf.PI * delta;
+			i = Mathf.Clamp(i, i, beamTime);
 		}
 		foreach (SpriteRenderer divider in dividers) {
 			divider.color = baseColor;
 		}
-		reveal.localScale = new Vector3(0.8f, 0.8f, 1f);
+		SetMask(false);
+		transform.rotation = 0f.Rot();
+		center.localScale = new Vector3(0.5f, 0.5f, 1f);
+		SetFill(0f);
 		locked = false;
 		yield break;
 	}
@@ -95,6 +101,7 @@ class Miracell : MonoBehaviour {
 	private IEnumerator Drain() {
 		float start = Time.fixedTime;
 		for (float i = 0f; i < drainTime; i = Time.fixedTime - start) {
+			// TODO animate this, orbital
 			if (locked || orbs == clip) start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 		}
@@ -119,11 +126,11 @@ class Miracell : MonoBehaviour {
 		float fillDelta = 1f - ((float)orbs / clip);
 		bool cancelled = false;
 		float chargeTimeSeg = chargeTime * 2f / 3f;
-		for (float i = 0; i < chargeTime && i >= 0f;) {
+		for (float i = 0f; i < chargeTime && i >= 0f;) {
 			ScaleColor(i / chargeTime);
 			if (i < chargeTimeSeg) {
 				float eval = curve.Evaluate(i / chargeTimeSeg);
-				transform.rotation = (chargeAng * eval).Rot();
+				transform.rotation = (-chargeAng * eval).Rot();
 				SetFill((float)orbs / clip + eval * fillDelta);
 			} else {
 				ScaleDividers(1f - (i - chargeTimeSeg) / (chargeTime - chargeTimeSeg));
@@ -153,6 +160,20 @@ class Miracell : MonoBehaviour {
 	
 	private void SetFill(float fill) {
 		ring.sharedMaterial.SetFloat("_Fill", fill);
+	}
+	
+	private void SetMask(bool enabled) {
+		if (enabled) {
+			ring.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+			foreach (SpriteRenderer divider in dividers) {
+				divider.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+			}
+		} else {
+			ring.maskInteraction = SpriteMaskInteraction.None;
+			foreach (SpriteRenderer divider in dividers) {
+				divider.maskInteraction = SpriteMaskInteraction.None;
+			}
+		}
 	}
 	
 	private void ScaleColor(float time) {
