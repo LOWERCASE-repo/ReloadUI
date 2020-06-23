@@ -4,13 +4,13 @@ class Pivot : MiracellPart {
 	
 	private float angle;
 	
-	override void Init(Miracell miracell) {
-		base.Init();
+	override internal void Init(Miracell miracell) {
+		this.miracell = miracell;
 		float gap = 360f / miracell.clip;
-		chargeAng = 720f + gap / 2f;
+		angle = 720f + gap / 2f;
 	}
 	
-	void Eval(float time) {
+	override internal void Eval(float time) {
 		transform.rotation = (angle * time).Rot();
 	}
 }

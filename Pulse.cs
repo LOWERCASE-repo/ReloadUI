@@ -7,7 +7,7 @@ class Pulse : MiracellPart {
 	[SerializeField]
 	private Transform clear;
 	
-	void Eval(float time) {
+	override internal void Eval(float time) {
 		float scale;
 		float smallSeg = 1f / 3f, largeSeg = 2f / 3f;
 		if (time < largeSeg) {

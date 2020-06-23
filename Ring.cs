@@ -1,15 +1,15 @@
 using UnityEngine;
 
-class Pulse : MiracellPart {
+class Ring : MiracellPart {
 	
 	[SerializeField]
 	private SpriteRenderer ring;
 	
-	override void Init(Miracell miracell) {
+	override internal void Init(Miracell miracell) {
 		this.miracell = miracell;
 	}
 	
-	void Eval(float time) {
+	override internal void Eval(float time) {
 		ring.sharedMaterial.SetFloat("_Angle", time);
 	}
 }

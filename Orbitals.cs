@@ -2,15 +2,12 @@ using UnityEngine;
 
 class Orbitals : MiracellPart {
 	
-	private float angle;
+	[SerializeField]
+	private SpriteRenderer outerSprite, innerSprite;
+	[SerializeField]
+	private Transform outerPivot, innerPivot;
 	
-	override void Init(Miracell miracell) {
-		base.Init();
-		float gap = 360f / miracell.clip;
-		chargeAng = 720f + gap / 2f;
-	}
-	
-	void Eval(float time) {
-		transform.rotation = (angle * time).Rot();
+	override internal void Eval(float time) {
+		Debug.Log("orbitals" + time);
 	}
 }
