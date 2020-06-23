@@ -4,19 +4,16 @@ using UnityEngine;
 class Miracell : MonoBehaviour {
 	
 	[SerializeField] [Range(2, 6)]
-	private int clip = 3;
+	int clip = 3;
 	[SerializeField]
 	private float shootLockTime = 0.2f, reloadLockTime = 0.3f, chargeLockTime = 0.4f;
 	[SerializeField]
 	private float reloadTime = 1f, chargeTime = 2f, beamTime = 0.5f;
+	[SerializeField]
+	Color color, baseColor;
 	
 	[SerializeField]
-	private Color color, baseColor;
-	
-	[SerializeField]
-	private SpriteRenderer divider, ring, pulse, center;
-	[SerializeField]
-	private Transform clear;
+	private SpriteRenderer center;
 	
 	[SerializeField]
 	private SpriteRenderer outerSprite, innerSprite;
@@ -24,25 +21,13 @@ class Miracell : MonoBehaviour {
 	private Transform outerAnchor, innerAnchor;
 	
 	private AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-	private SpriteRenderer[] dividers;
 	private int shots;
 	private bool locked, queued;
-	private float chargeAng, beamAng;
 	
 	private void Start() {
 		shots = clip;
-		float gap = 360f / clip;
-		chargeAng = Mathf.Floor(chargeTime) * 360f + gap / 2f;
-		beamAng = gap / 2f;
-		ring.sharedMaterial.SetFloat("_Start", 0f);
 		SetFill(1f);
 		ring.color = color;
-		dividers = new SpriteRenderer[clip];
-		for (int i = 0; i < clip; i++) {
-			Quaternion rot = (i * gap).Rot();
-			dividers[i] = Instantiate(divider, Vector3.zero, rot, transform);
-			dividers[i].color = baseColor;
-		}
 		StartCoroutine(Reload());
 	}
 	
@@ -161,46 +146,5 @@ class Miracell : MonoBehaviour {
 			shots = 0;
 		}
 		locked = false;
-	}
-	
-	private void SetFill(float fill) {
-		ring.sharedMaterial.SetFloat("_Fill", fill);
-	}
-	
-	private void ScaleColor(float time) {
-		time = curve.Evaluate(time);
-		divider.color = baseColor;
-		pulse.color = Color.Lerp(color, color.gamma, time);
-		ring.color = Color.Lerp(color, color.gamma, time);
-	}
-	
-	private void ScaleBeamColor(float time) {
-		time = curve.Evaluate(time);
-		foreach (SpriteRenderer divider in dividers) {
-			divider.color = Color.Lerp(color, color.gamma, time);
-		}
-		ring.color = Color.Lerp(color, color.gamma, time);
-	}
-	
-	private void ScalePulse(float time) {
-		float scale;
-		float seg = 2f / 3f;
-		if (time < seg) {
-			if (time < 1f / 3f) clear.localScale = new Vector3(0f, 0f, 1f);
-			scale = curve.Evaluate(time / seg) * 0.8f;
-			pulse.transform.localScale = new Vector3(scale, scale, 1f);
-		}
-		if (time >= 1f / 3f) {
-			if (time >= seg) pulse.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
-			scale = curve.Evaluate((time - 1f / 3f) / seg) * 0.5f;
-			clear.localScale = new Vector3(scale, scale, 1f);
-		}
-	}
-	
-	private void ScaleDividers(float time) {
-		time = curve.Evaluate(time);
-		foreach (SpriteRenderer divider in dividers) {
-			divider.transform.localScale = new Vector3(0.1f * time, 0.4f, 1f);
-		}
 	}
 }

@@ -3,8 +3,7 @@ Shader "Custom/RadialFill" {
 		[PerRendererData]
 		_MainTex ("Texture", 2D) = "white" {
 		}
-		_Start("Start", Range(0, 360)) = 0
-		_Fill("Fill", Range(0, 1)) = 1
+		_Angle("Angle", Range(0, 1)) = 1
 	}
 	
 	SubShader {
@@ -20,8 +19,7 @@ Shader "Custom/RadialFill" {
 			#pragma fragment frag
 			
 			sampler2D _MainTex;
-			float _Start;
-			float _Fill;
+			float _Angle;
 			
 			struct appdata {
 				float4 position : POSITION;
@@ -47,9 +45,8 @@ Shader "Custom/RadialFill" {
 				fixed4 c = tex2D(_MainTex, IN.texCoord) * IN.color;
 	 			c.rgb *= c.a;
 				
-				float startAngle = _Start;
-				float endAngle = (1 - _Fill) * 360 + startAngle;
-				float offset0 = clamp(0, 360, startAngle + 360);
+				float endAngle = (1 - _Angle) * 360;
+				float offset0 = clamp(0, 360, 360);
 				float offset360 = clamp(0, 360, endAngle - 360);
 				
 				float angle = atan2(lerp(-1, 1, IN.texCoord.y), lerp(-1, 1, IN.texCoord.x));
@@ -57,7 +54,7 @@ Shader "Custom/RadialFill" {
 				angle += 90;
 				
 				if(angle < 0) angle = 360 + angle;
-				if(angle >= startAngle && angle <= endAngle) discard;
+				if(angle >= 0 && angle <= endAngle) discard;
 				if(angle <= offset360) discard;
 				if(angle >= offset0) discard;
 				return c;
