@@ -11,7 +11,7 @@ class Miracell : MonoBehaviour {
 	[SerializeField]
 	private float shootLock = 0.2f, reloadLock = 0.3f, chargeLock = 0.4f;
 	[SerializeField]
-	private float beamWait = 0.5f, reloadWait = 1f, chargeWait = 2f;
+	private float beamWait = 0.3f, reloadWait = 1f, chargeWait = 2f;
 	[SerializeField]
 	internal Color color, baseColor;
 	
@@ -19,7 +19,7 @@ class Miracell : MonoBehaviour {
 	[SerializeField]
 	private MiracellPart pivot;
 	[SerializeField]
-	private MiracellPart core, ring, dividers, power;
+	private MiracellPart core, ring, dividers, pulse, power;
 	
 	private AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 	private int shots;
@@ -66,40 +66,32 @@ class Miracell : MonoBehaviour {
 	private IEnumerator Beam() {
 		locked = true;
 		float start = Time.fixedTime;
-		center.transform.localScale = new Vector3(0.4f, 0.4f, 1f);
-		center.color = color;
-		for (float i = 0f; i >= 0f;) {
-			
+		for (float i = 0f; i >= 0f; i = Mathf.Clamp(i, i, beamWait)) {
+			core.Eval(i / beamWait);
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 			float delta = Time.fixedTime - start;
 			i = Input.GetKey(KeyCode.Mouse0) ? i + delta : i - Mathf.PI * delta;
-			i = Mathf.Clamp(i, i, beamWait);
 		}
-		center.color = baseColor;
-		center.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
 		locked = false;
 		yield break;
 	}
 	
 	private IEnumerator Reload() {
-		// total = 1 / 2pi * 2 + 360
 		float start = Time.fixedTime;
 		for (float i = 0f; i < reloadWait; i = Time.fixedTime - start) {
-			// TODO animate this, shoot
 			if (locked || shots == clip) start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 		}
 		locked = true;
 		start = Time.fixedTime;
 		for (float i = 0f; i < reloadLock; i = Time.fixedTime - start) {
-			float time = i / reloadLock;
-			ScaleColor(1f - time);
-			ScalePulse(time);
+			i = curve.Evaluate(i / reloadLock);
+			pulse.Eval(i);
 			yield return new WaitForFixedUpdate();
 		}
-		ScalePulse(0f);
-		SetFill(1f);
+		pulse.Eval(0f);
+		ring.Eval(1f);
 		shots = clip;
 		locked = false;
 		StartCoroutine(Reload());
@@ -112,13 +104,13 @@ class Miracell : MonoBehaviour {
 		bool cancelled = false;
 		float chargeWaitSeg = chargeWait * 2f / 3f;
 		for (float i = 0f; i < chargeWait && i >= 0f;) {
-			ScaleColor(i / chargeWait);
+			power.Eval(i / chargeWait);
 			if (i < chargeWaitSeg) {
 				float eval = curve.Evaluate(i / chargeWaitSeg);
-				transform.rotation = (-chargeAng * eval).Rot();
-				SetFill((float)shots / clip + eval * fillDelta);
+				pivot.Eval(eval);
+				ring.Eval((float)shots / clip + eval * fillDelta);
 			} else {
-				ScaleDividers(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
+				dividers.Eval(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
 			}
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
@@ -128,16 +120,16 @@ class Miracell : MonoBehaviour {
 		}
 		if (!cancelled) {
 			start = Time.fixedTime;
-			SetFill(0f);
+			ring.Eval(0f);
 			for (float i = 0f; i < chargeLock; i = Time.fixedTime - start) {
-				ScalePulse(1f - i / chargeLock);
-				ScaleColor(1f - i / chargeLock);
+				i = curve.Evaluate(1f - i / chargeLock);
+				pulse.Eval(i);
+				power.Eval(i);
 				yield return new WaitForFixedUpdate();
 			}
-			ScaleColor(0f);
-			ScalePulse(0f);
-			SetFill(0f);
-			ScaleDividers(1f);
+			power.Eval(0f);
+			pulse.Eval(0f);
+			dividers.Eval(1f);
 			shots = 0;
 		}
 		locked = false;

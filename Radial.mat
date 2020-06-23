@@ -65,7 +65,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 0
-    - _Angle: 187
+    - _Angle: 1
     - _Arc1: 44
     - _Arc2: 144
     - _BumpScale: 1
@@ -74,7 +74,6 @@ Material:
     - _DstBlend: 0
     - _EnableExternalAlpha: 0
     - _End: 1
-    - _Angle: 0.000000029802322
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1

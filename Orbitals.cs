@@ -8,6 +8,5 @@ class Orbitals : MiracellPart {
 	private Transform outerPivot, innerPivot;
 	
 	override internal void Eval(float time) {
-		Debug.Log("orbitals" + time);
 	}
 }
