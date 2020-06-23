@@ -478,9 +478,9 @@ MonoBehaviour:
   divider: {fileID: 5485149058278495710, guid: 446d26e96ac7ecf4ab4aeccf4d4bd908, type: 3}
   ring: {fileID: 1024804863}
   pulse: {fileID: 53242710}
+  center: {fileID: 1883023729}
   clear: {fileID: 251224597}
-  center: {fileID: 1883023730}
-  clip: 6
+  clip: 2
   orbLockTime: 0.2
   drainLockTime: 0.3
   chargeLockTime: 0.4

@@ -3,28 +3,34 @@ using UnityEngine;
 
 class Miracell : MonoBehaviour {
 	
-	[SerializeField]
-	private SpriteRenderer divider, ring, pulse;
-	[SerializeField]
-	private Transform clear, center;
-	
 	[SerializeField] [Range(2, 6)]
 	private int clip = 3;
 	[SerializeField]
-	private float orbLockTime = 0.2f, drainLockTime = 0.3f, chargeLockTime = 0.4f;
+	private float shootLockTime = 0.2f, reloadLockTime = 0.3f, chargeLockTime = 0.4f;
 	[SerializeField]
-	private float drainTime = 1f, chargeTime = 2f, beamTime = 0.5f;
+	private float reloadTime = 1f, chargeTime = 2f, beamTime = 0.5f;
+	
 	[SerializeField]
 	private Color color, baseColor;
 	
+	[SerializeField]
+	private SpriteRenderer divider, ring, pulse, center;
+	[SerializeField]
+	private Transform clear;
+	
+	[SerializeField]
+	private SpriteRenderer outerSprite, innerSprite;
+	[SerializeField]
+	private Transform outerAnchor, innerAnchor;
+	
 	private AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 	private SpriteRenderer[] dividers;
-	private int orbs;
+	private int shots;
 	private bool locked, queued;
 	private float chargeAng, beamAng;
 	
 	private void Start() {
-		orbs = clip;
+		shots = clip;
 		float gap = 360f / clip;
 		chargeAng = Mathf.Floor(chargeTime) * 360f + gap / 2f;
 		beamAng = gap / 2f;
@@ -37,32 +43,32 @@ class Miracell : MonoBehaviour {
 			dividers[i] = Instantiate(divider, Vector3.zero, rot, transform);
 			dividers[i].color = baseColor;
 		}
-		StartCoroutine(Drain());
+		StartCoroutine(Reload());
 	}
 	
 	private void Update() {
 		if (queued && !locked) {
-			if (orbs > 0) StartCoroutine(Orb());
+			if (shots > 0) StartCoroutine(Shoot());
 			queued = false;
 		}
 		if (Input.GetKeyDown(KeyCode.Mouse0)) {
 			if (locked) queued = true;
-			else if (orbs > 0) StartCoroutine(Orb());
+			else if (shots > 0) StartCoroutine(Shoot());
 		}
 		if (Input.GetKey(KeyCode.Mouse0) && !locked) {
-			if (orbs == 0) StartCoroutine(Beam());
-			else if (orbs < clip) StartCoroutine(Charge());
+			if (shots == 0) StartCoroutine(Beam());
+			else if (shots < clip) StartCoroutine(Charge());
 		}
 	}
 	
-	private IEnumerator Orb() {
+	private IEnumerator Shoot() {
 		locked = true;
 		float delta = 1f / clip;
-		orbs--;
+		shots--;
 		float start = Time.fixedTime;
-		for (float i = 0f; i < orbLockTime; i = Time.fixedTime - start) {
-			i = curve.Evaluate(i / orbLockTime);
-			SetFill((1f + orbs) / clip - i * delta);
+		for (float i = 0f; i < shootLockTime; i = Time.fixedTime - start) {
+			i = curve.Evaluate(i / shootLockTime);
+			SetFill((1f + shots) / clip - i * delta);
 			ScaleColor(i < 0.5f ? i * 2f : 1f - i * 2f);
 			yield return new WaitForFixedUpdate();
 		}
@@ -72,60 +78,57 @@ class Miracell : MonoBehaviour {
 	// TODO change dividers into cells
 	
 	private IEnumerator Beam() {
-		// TODO change to simple fade in dot, doesnt make reload look weird
 		locked = true;
 		float start = Time.fixedTime;
-		center.localScale = new Vector3(0.6f, 0.6f, 1f);
-		SetMask(true);
-		SetFill(1f);
+		center.transform.localScale = new Vector3(0.4f, 0.4f, 1f);
+		center.color = color;
 		for (float i = 0f; i >= 0f;) {
-			ScaleBeamColor(1f - i / beamTime);
-			float scale = curve.Evaluate(i / beamTime);
-			transform.rotation = (beamAng * scale).Rot();
-			clear.localScale = new Vector3(scale, scale, 1f) * 0.8f;
+			float scale = curve.Evaluate(i / beamTime) * 2f;
+			if (scale < 1f) {
+				Color fade = center.color;
+				fade.a = scale;
+				Debug.Log(fade.a);
+				center.color = fade;
+			} else center.color = Color.Lerp(color, color.gamma, scale - 1f);
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 			float delta = Time.fixedTime - start;
 			i = Input.GetKey(KeyCode.Mouse0) ? i + delta : i - Mathf.PI * delta;
 			i = Mathf.Clamp(i, i, beamTime);
 		}
-		foreach (SpriteRenderer divider in dividers) {
-			divider.color = baseColor;
-		}
-		SetMask(false);
-		transform.rotation = 0f.Rot();
-		center.localScale = new Vector3(0.5f, 0.5f, 1f);
-		SetFill(0f);
+		center.color = baseColor;
+		center.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
 		locked = false;
 		yield break;
 	}
 	
-	private IEnumerator Drain() {
+	private IEnumerator Reload() {
+		// total = 1 / 2pi * 2 + 360
 		float start = Time.fixedTime;
-		for (float i = 0f; i < drainTime; i = Time.fixedTime - start) {
-			// TODO animate this, orbital
-			if (locked || orbs == clip) start = Time.fixedTime;
+		for (float i = 0f; i < reloadTime; i = Time.fixedTime - start) {
+			// TODO animate this, shoot
+			if (locked || shots == clip) start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 		}
 		locked = true;
 		start = Time.fixedTime;
-		for (float i = 0f; i < drainLockTime; i = Time.fixedTime - start) {
-			float time = i / drainLockTime;
+		for (float i = 0f; i < reloadLockTime; i = Time.fixedTime - start) {
+			float time = i / reloadLockTime;
 			ScaleColor(1f - time);
 			ScalePulse(time);
 			yield return new WaitForFixedUpdate();
 		}
 		ScalePulse(0f);
 		SetFill(1f);
-		orbs = clip;
+		shots = clip;
 		locked = false;
-		StartCoroutine(Drain());
+		StartCoroutine(Reload());
 	}
 	
 	private IEnumerator Charge() {
 		locked = true;
 		float start = Time.fixedTime;
-		float fillDelta = 1f - ((float)orbs / clip);
+		float fillDelta = 1f - ((float)shots / clip);
 		bool cancelled = false;
 		float chargeTimeSeg = chargeTime * 2f / 3f;
 		for (float i = 0f; i < chargeTime && i >= 0f;) {
@@ -133,7 +136,7 @@ class Miracell : MonoBehaviour {
 			if (i < chargeTimeSeg) {
 				float eval = curve.Evaluate(i / chargeTimeSeg);
 				transform.rotation = (-chargeAng * eval).Rot();
-				SetFill((float)orbs / clip + eval * fillDelta);
+				SetFill((float)shots / clip + eval * fillDelta);
 			} else {
 				ScaleDividers(1f - (i - chargeTimeSeg) / (chargeTime - chargeTimeSeg));
 			}
@@ -155,27 +158,13 @@ class Miracell : MonoBehaviour {
 			ScalePulse(0f);
 			SetFill(0f);
 			ScaleDividers(1f);
-			orbs = 0;
+			shots = 0;
 		}
 		locked = false;
 	}
 	
 	private void SetFill(float fill) {
 		ring.sharedMaterial.SetFloat("_Fill", fill);
-	}
-	
-	private void SetMask(bool enabled) {
-		if (enabled) {
-			ring.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-			foreach (SpriteRenderer divider in dividers) {
-				divider.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
-			}
-		} else {
-			ring.maskInteraction = SpriteMaskInteraction.None;
-			foreach (SpriteRenderer divider in dividers) {
-				divider.maskInteraction = SpriteMaskInteraction.None;
-			}
-		}
 	}
 	
 	private void ScaleColor(float time) {
