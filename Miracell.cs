@@ -69,6 +69,8 @@ class Miracell : MonoBehaviour {
 		locked = false;
 	}
 	
+	// TODO change dividers into cells
+	
 	private IEnumerator Beam() {
 		// TODO change to simple fade in dot, doesnt make reload look weird
 		locked = true;
