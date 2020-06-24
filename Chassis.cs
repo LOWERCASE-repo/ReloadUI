@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-class Pivot : MiracellPart {
+class Chassis : MiracellPart {
 	
 	private float angle;
 	
@@ -10,7 +11,7 @@ class Pivot : MiracellPart {
 		angle = 720f + gap / 2f;
 	}
 	
-	override internal void Eval(float time) {
+	override internal void Scale(float time) {
 		transform.rotation = (angle * time).Rot();
 	}
 }

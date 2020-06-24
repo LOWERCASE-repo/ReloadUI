@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 class Orbitals : MiracellPart {
 	
@@ -7,6 +8,6 @@ class Orbitals : MiracellPart {
 	[SerializeField]
 	private Transform outerPivot, innerPivot;
 	
-	override internal void Eval(float time) {
+	override internal void Scale(float time) {
 	}
 }

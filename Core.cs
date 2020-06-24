@@ -1,17 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 class Core : MiracellPart {
 	
 	[SerializeField]
-	private SpriteRenderer core;
+	private Image core;
 	
-	override internal void Eval(float time) {
+	override internal void Scale(float time) {
 		time *= 2f;
-		if (time < 1f) {
-			Color fade = core.color;
-			fade.a = time;
-			core.color = fade;
-		} else core.color = Color.Lerp(miracell.color, miracell.color.gamma, time - 1f);
+		if (time < 1f) core.color = Color.Lerp(miracell.baseColor, miracell.color, time);
+		else core.color = Color.Lerp(miracell.color, miracell.color.gamma, time - 1f);
 	}
-	// TODO add a mask to this too so that reload cuts cleanly
 }

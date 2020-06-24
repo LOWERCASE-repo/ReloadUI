@@ -1,15 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 class Ring : MiracellPart {
 	
 	[SerializeField]
-	private SpriteRenderer ring;
+	private Image ring;
 	
 	override internal void Init(Miracell miracell) {
 		this.miracell = miracell;
 	}
 	
-	override internal void Eval(float time) {
+	override internal void Scale(float time) {
 		ring.sharedMaterial.SetFloat("_Angle", time);
 	}
 }

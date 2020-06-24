@@ -8,5 +8,5 @@ abstract class MiracellPart : MonoBehaviour {
 		this.miracell = miracell;
 	}
 	
-	abstract internal void Eval(float time);
+	abstract internal void Scale(float time);
 }

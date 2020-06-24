@@ -56,8 +56,8 @@ class Miracell : MonoBehaviour {
 		float start = Time.fixedTime;
 		for (float i = 0f; i < shootLock; i = Time.fixedTime - start) {
 			i = curve.Evaluate(i / shootLock);
-			ring.Eval((1f + shots) / clip - i * delta);
-			power.Eval(i < 0.5f ? i * 2f : 1f - i * 2f);
+			ring.Scale((1f + shots) / clip - i * delta);
+			power.Scale(i < 0.5f ? i * 2f : 1f - i * 2f);
 			yield return new WaitForFixedUpdate();
 		}
 		locked = false;
@@ -67,7 +67,7 @@ class Miracell : MonoBehaviour {
 		locked = true;
 		float start = Time.fixedTime;
 		for (float i = 0f; i >= 0f; i = Mathf.Clamp(i, i, beamWait)) {
-			core.Eval(i / beamWait);
+			core.Scale(i / beamWait);
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
 			float delta = Time.fixedTime - start;
@@ -87,11 +87,11 @@ class Miracell : MonoBehaviour {
 		start = Time.fixedTime;
 		for (float i = 0f; i < reloadLock; i = Time.fixedTime - start) {
 			i = curve.Evaluate(i / reloadLock);
-			pulse.Eval(i);
+			pulse.Scale(i);
 			yield return new WaitForFixedUpdate();
 		}
-		pulse.Eval(0f);
-		ring.Eval(1f);
+		pulse.Scale(0f);
+		ring.Scale(1f);
 		shots = clip;
 		locked = false;
 		StartCoroutine(Reload());
@@ -104,13 +104,13 @@ class Miracell : MonoBehaviour {
 		bool cancelled = false;
 		float chargeWaitSeg = chargeWait * 2f / 3f;
 		for (float i = 0f; i < chargeWait && i >= 0f;) {
-			power.Eval(i / chargeWait);
+			power.Scale(i / chargeWait);
 			if (i < chargeWaitSeg) {
 				float eval = curve.Evaluate(i / chargeWaitSeg);
-				pivot.Eval(eval);
-				ring.Eval((float)shots / clip + eval * fillDelta);
+				pivot.Scale(eval);
+				ring.Scale((float)shots / clip + eval * fillDelta);
 			} else {
-				dividers.Eval(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
+				dividers.Scale(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
 			}
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
@@ -120,16 +120,16 @@ class Miracell : MonoBehaviour {
 		}
 		if (!cancelled) {
 			start = Time.fixedTime;
-			ring.Eval(0f);
+			ring.Scale(0f);
 			for (float i = 0f; i < chargeLock; i = Time.fixedTime - start) {
 				i = curve.Evaluate(1f - i / chargeLock);
-				pulse.Eval(i);
-				power.Eval(i);
+				pulse.Scale(i);
+				power.Scale(i);
 				yield return new WaitForFixedUpdate();
 			}
-			power.Eval(0f);
-			pulse.Eval(0f);
-			dividers.Eval(1f);
+			power.Scale(0f);
+			pulse.Scale(0f);
+			dividers.Scale(1f);
 			shots = 0;
 		}
 		locked = false;
