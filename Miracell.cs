@@ -17,9 +17,9 @@ class Miracell : MonoBehaviour {
 	
 	[Header("Parts")]
 	[SerializeField]
-	private MiracellPart pivot;
+	private MiracellPart chassis;
 	[SerializeField]
-	private MiracellPart core, ring, dividers, pulse, power;
+	private MiracellPart chambers, bolts, orbitals, core;
 	
 	private AnimationCurve curve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 	private int shots;
@@ -27,10 +27,10 @@ class Miracell : MonoBehaviour {
 	
 	private void Awake() {
 		shots = clip;
-		pivot.Init(this);
+		chassis.Init(this);
 		core.Init(this);
-		ring.Init(this);
-		dividers.Init(this);
+		chambers.Init(this);
+		bolts.Init(this);
 		StartCoroutine(Reload());
 	}
 	
@@ -56,8 +56,8 @@ class Miracell : MonoBehaviour {
 		float start = Time.fixedTime;
 		for (float i = 0f; i < shootLock; i = Time.fixedTime - start) {
 			i = curve.Evaluate(i / shootLock);
-			ring.Scale((1f + shots) / clip - i * delta);
-			power.Scale(i < 0.5f ? i * 2f : 1f - i * 2f);
+			chambers.Scale((1f + shots) / clip - i * delta);
+			// power.Scale(i < 0.5f ? i * 2f : 1f - i * 2f);
 			yield return new WaitForFixedUpdate();
 		}
 		locked = false;
@@ -87,11 +87,11 @@ class Miracell : MonoBehaviour {
 		start = Time.fixedTime;
 		for (float i = 0f; i < reloadLock; i = Time.fixedTime - start) {
 			i = curve.Evaluate(i / reloadLock);
-			pulse.Scale(i);
+			orbitals.Scale(i);
 			yield return new WaitForFixedUpdate();
 		}
-		pulse.Scale(0f);
-		ring.Scale(1f);
+		orbitals.Scale(0f);
+		chambers.Scale(1f);
 		shots = clip;
 		locked = false;
 		StartCoroutine(Reload());
@@ -104,13 +104,13 @@ class Miracell : MonoBehaviour {
 		bool cancelled = false;
 		float chargeWaitSeg = chargeWait * 2f / 3f;
 		for (float i = 0f; i < chargeWait && i >= 0f;) {
-			power.Scale(i / chargeWait);
+			// power.Scale(i / chargeWait);
 			if (i < chargeWaitSeg) {
 				float eval = curve.Evaluate(i / chargeWaitSeg);
-				pivot.Scale(eval);
-				ring.Scale((float)shots / clip + eval * fillDelta);
+				chassis.Scale(eval);
+				chambers.Scale((float)shots / clip + eval * fillDelta);
 			} else {
-				dividers.Scale(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
+				bolts.Scale(1f - (i - chargeWaitSeg) / (chargeWait - chargeWaitSeg));
 			}
 			start = Time.fixedTime;
 			yield return new WaitForFixedUpdate();
@@ -120,16 +120,16 @@ class Miracell : MonoBehaviour {
 		}
 		if (!cancelled) {
 			start = Time.fixedTime;
-			ring.Scale(0f);
+			chambers.Scale(0f);
 			for (float i = 0f; i < chargeLock; i = Time.fixedTime - start) {
 				i = curve.Evaluate(1f - i / chargeLock);
-				pulse.Scale(i);
-				power.Scale(i);
+				orbitals.Scale(i);
+				// power.Scale(i);
 				yield return new WaitForFixedUpdate();
 			}
-			power.Scale(0f);
-			pulse.Scale(0f);
-			dividers.Scale(1f);
+			// power.Scale(0f);
+			orbitals.Scale(0f);
+			bolts.Scale(1f);
 			shots = 0;
 		}
 		locked = false;

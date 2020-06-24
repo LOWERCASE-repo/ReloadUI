@@ -1,17 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-class Dividers : MiracellPart {
+class Bolts : MiracellPart {
 	
 	[SerializeField]
-	private Transform divider;
+	private Transform bolt;
 	
 	override internal void Init(Miracell miracell) {
 		this.miracell = miracell;
-		float gap = 360f / miracell.clip;
-		dividers = new Transform[miracell.clip];
+		float delta = 360f / miracell.clip;
 		for (int i = 0; i < miracell.clip; i++) {
-			Quaternion rot = (i * gap).Rot();
+			Quaternion rot = (i * delta).Rot();
+			Instantiate(bolt, transform.position, rot, transform);
 		}
 	}
 	

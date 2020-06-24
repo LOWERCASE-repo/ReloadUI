@@ -4,7 +4,7 @@ using UnityEngine.UI;
 class Orbitals : MiracellPart {
 	
 	[SerializeField]
-	private SpriteRenderer outerSprite, innerSprite;
+	private Image outerSprite, innerSprite;
 	[SerializeField]
 	private Transform outerPivot, innerPivot;
 	
